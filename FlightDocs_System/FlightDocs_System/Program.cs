@@ -68,6 +68,17 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
     options.TokenLifespan = TimeSpan.FromHours(1);
 });
 builder.Services.AddScoped<IUserService,UserService>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(op =>
+{
+    op.Password.RequireDigit = false;
+    op.Password.RequireLowercase = false;
+    op.Password.RequiredLength = 8;
+    op.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    op.User.AllowedUserNameCharacters = string.Empty;
+
+
+}).AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

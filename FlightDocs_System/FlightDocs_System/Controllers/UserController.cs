@@ -16,7 +16,7 @@ namespace FlightDocs_System.Controllers
             _service = service;
         }
         [HttpPost("Login")]
-        public async IActionResult Login(UserLogin user)
+        public async Task<IActionResult> Login(UserLogin user)
         {
             if (ModelState.IsValid)
             {
@@ -28,6 +28,22 @@ namespace FlightDocs_System.Controllers
                 return BadRequest(result);
             }
             return BadRequest("Something is not valid");
+        }
+        [HttpPost("Register")]
+
+        public async Task<IActionResult> CreateUser(string role, [FromBody] UserRegister user)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _service.Register(role,user);
+                if(result.IsSuccess)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+            }
+            return BadRequest("Something is not valid");
+
         }
     }
 }
