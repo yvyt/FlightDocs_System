@@ -1,5 +1,6 @@
 ﻿using FlightDocs_System.Model;
 using FlightDocs_System.Service.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,6 +45,28 @@ namespace FlightDocs_System.Controllers
             }
             return BadRequest("Something is not valid");
 
+        }
+        [HttpGet("GetAllUser")]
+        [Authorize(AuthenticationSchemes = "Bearer",Roles ="Admin")]
+        public async Task<IActionResult> UserManager()
+        {
+            var result= await _service.GetAll();
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+        [HttpGet("GetDetail")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
+        public async Task<IActionResult> GetDetaitl(string id)
+        {
+            var result = await _service.GetById(id);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return NotFound(result);
         }
     }
 }

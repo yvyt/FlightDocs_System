@@ -1,4 +1,5 @@
 using FlightDocs_System.Data;
+using FlightDocs_System.Service.Flights;
 using FlightDocs_System.Service.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -68,6 +69,7 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
     options.TokenLifespan = TimeSpan.FromHours(1);
 });
 builder.Services.AddScoped<IUserService,UserService>();
+builder.Services.AddScoped<IFlightService,FlightService>();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(op =>
 {
     op.Password.RequireDigit = false;

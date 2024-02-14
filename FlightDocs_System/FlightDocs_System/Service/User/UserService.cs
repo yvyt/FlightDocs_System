@@ -1,6 +1,7 @@
 ﻿using FlightDocs_System.Data;
 using FlightDocs_System.Model;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -147,6 +148,114 @@ namespace FlightDocs_System.Service.User
                     IsSuccess = false,
                 };
             }
+        }
+
+        public async Task<ResponseModel> GetAll()
+        {
+            var data = await _userManager.Users.ToListAsync();
+            if (data == null)
+            {
+                return new ResponseModel
+                {
+                    Message = "User is empty",
+                    IsSuccess = true
+                };
+            }
+            List<UserDTO> users= new List<UserDTO>();
+            foreach(var user in data)
+            {
+                var role = await _userManager.GetRolesAsync(user);
+                var roleName = role.FirstOrDefault();
+
+                UserDTO u = new UserDTO
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Role= roleName
+                };
+                users.Add(u);
+            }
+            return new ResponseModel
+            {
+                Message = "Get all users is successful",
+                IsSuccess = true,
+                Data = users,
+            };
+        }
+
+        public async Task<ResponseModel> GetById(string id)
+        {
+            var user= await _userManager.FindByIdAsync(id);
+            if(user == null)
+            {
+                return new ResponseModel
+                {
+                    Message=$"Not exist user with id={id}",
+                    IsSuccess=false
+                };
+            }
+            var role = await _userManager.GetRolesAsync(user);
+            var roleName = role.FirstOrDefault();
+            UserDTO u = new UserDTO
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Role = roleName
+            };
+            return new ResponseModel
+            {
+                Message = "Find user is successful",
+                IsSuccess = true,
+                Data = u
+            };
+        }
+        public async Task<UserDTO> GetUserByToken(string token)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["AuthSettings:Key"]));
+            var decodedToken = DecodeJwtToken(token, key);
+
+            var userId = decodedToken?.Claims.FirstOrDefault(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            var email = decodedToken?.Claims.FirstOrDefault(claim => claim.Type == "Email")?.Value;
+            var role = decodedToken?.Claims.FirstOrDefault(claim => claim.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user != null)
+            {
+                var roleName = await _userManager.GetRolesAsync(user);
+                var firstRole = roleName.FirstOrDefault();
+
+                return new UserDTO
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Role= firstRole,
+                };
+            }
+            return null;
+        }
+        public JwtSecurityToken DecodeJwtToken(string accessToken, SymmetricSecurityKey key)
+        {
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = key,
+
+                ValidateIssuer = true,
+                ValidIssuer = _config["AuthSettings:Issuer"],
+
+                ValidateAudience = true,
+                ValidAudience = _config["AuthSettings:Audience"],
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            SecurityToken securityToken;
+            var principal = tokenHandler.ValidateToken(accessToken, tokenValidationParameters, out securityToken);
+
+            return securityToken as JwtSecurityToken;
         }
     }
 }
