@@ -70,6 +70,8 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 });
 builder.Services.AddScoped<IUserService,UserService>();
 builder.Services.AddScoped<IFlightService,FlightService>();
+builder.Services.AddScoped<IFlightDocumentService,FlightDocumentService>();
+builder.Services.AddScoped<ITypeDocumentService,TypeDocumentService>();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(op =>
 {
     op.Password.RequireDigit = false;

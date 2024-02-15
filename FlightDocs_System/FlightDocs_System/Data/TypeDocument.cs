@@ -27,6 +27,10 @@ namespace FlightDocs_System.Data
         [Required]
 
         public string UpdateBy { get; set; }
+        [StringLength (255)]
+        public string? Note {  get; set; }
+        [Required]
+        public bool isActive { get; set; } = true;
         public virtual ICollection<FlightDocument> FlightDocuments { get; set; }
 
     }
