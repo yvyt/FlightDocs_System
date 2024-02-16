@@ -9,5 +9,6 @@ namespace FlightDocs_System.Service.Flights
         Task<ResponseModel> GetById(string id);
         Task<ResponseModel> InactiveFlight(string id);
         Task<ResponseModel> UpdateFlight(string id, FlightCreate flight);
+        Task<ResponseModel> GetActiveFlight(string id);
     }
 }

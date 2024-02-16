@@ -7,12 +7,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
@@ -72,6 +75,7 @@ builder.Services.AddScoped<IUserService,UserService>();
 builder.Services.AddScoped<IFlightService,FlightService>();
 builder.Services.AddScoped<IFlightDocumentService,FlightDocumentService>();
 builder.Services.AddScoped<ITypeDocumentService,TypeDocumentService>();
+builder.Services.AddTransient<IDocumentService,DocumentService>();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(op =>
 {
     op.Password.RequireDigit = false;

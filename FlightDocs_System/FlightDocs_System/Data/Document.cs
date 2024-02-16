@@ -13,7 +13,9 @@ namespace FlightDocs_System.Data
         public string Id { get; set; }
         [Required]
 
-        public string FlightDocumentId { get; set; }
+        public string Name { get; set; }
+        [Required]
+        public string ContentType { get; set; }
         [Required]
 
         public string Path { get; set; }

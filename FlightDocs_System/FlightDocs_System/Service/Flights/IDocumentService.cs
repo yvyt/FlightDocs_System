@@ -6,7 +6,8 @@ namespace FlightDocs_System.Service.Flights
     public interface IDocumentService
     {
        
-        Task<ResponseModel> AddDocument(Document d);
+        Task<ResponseModel> AddDocument(DocumentCreate d);
+        Task<ResponseModel> UploadFile(IFormFile file, string path);
 
     }
 }

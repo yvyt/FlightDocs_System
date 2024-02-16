@@ -35,9 +35,10 @@ namespace FlightDocs_System.Data
                 .WithMany(t => t.FlightDocuments)
                 .HasForeignKey(fd => fd.TypeId);
 
-            builder.Entity<Document>()
-                .HasOne(d => d.FlightDocument)
-                .WithOne(fd => fd.Document);
+            builder.Entity<FlightDocument>()
+                .HasOne(d => d.Document)
+                .WithOne(fd => fd.FlightDocument)
+                .HasForeignKey<FlightDocument>(fd => fd.DocumentId);
 
 
             //SeedRoles(builder);

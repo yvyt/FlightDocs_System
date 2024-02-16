@@ -4,6 +4,7 @@ using FlightDocs_System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlightDocs_System.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240216080359_updateColumn")]
+    partial class updateColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,19 +31,18 @@ namespace FlightDocs_System.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("ContentType")
+                    b.Property<string>("FlightDocumentId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FlightDocumentId")
+                        .IsUnique();
 
                     b.ToTable("Document");
                 });
@@ -107,20 +108,12 @@ namespace FlightDocs_System.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DocumentId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("FlightId")
                         .IsRequired()
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Note")
                         .IsRequired()
@@ -141,9 +134,6 @@ namespace FlightDocs_System.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DocumentId")
-                        .IsUnique();
 
                     b.HasIndex("FlightId");
 
@@ -390,14 +380,19 @@ namespace FlightDocs_System.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("FlightDocs_System.Data.FlightDocument", b =>
+            modelBuilder.Entity("FlightDocs_System.Data.Document", b =>
                 {
-                    b.HasOne("FlightDocs_System.Data.Document", "Document")
-                        .WithOne("FlightDocument")
-                        .HasForeignKey("FlightDocs_System.Data.FlightDocument", "DocumentId")
+                    b.HasOne("FlightDocs_System.Data.FlightDocument", "FlightDocument")
+                        .WithOne("Document")
+                        .HasForeignKey("FlightDocs_System.Data.Document", "FlightDocumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("FlightDocument");
+                });
+
+            modelBuilder.Entity("FlightDocs_System.Data.FlightDocument", b =>
+                {
                     b.HasOne("FlightDocs_System.Data.Flight", "Flight")
                         .WithMany("FlightDocuments")
                         .HasForeignKey("FlightId")
@@ -409,8 +404,6 @@ namespace FlightDocs_System.Migrations
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Document");
 
                     b.Navigation("Flight");
 
@@ -468,15 +461,15 @@ namespace FlightDocs_System.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FlightDocs_System.Data.Document", b =>
-                {
-                    b.Navigation("FlightDocument")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("FlightDocs_System.Data.Flight", b =>
                 {
                     b.Navigation("FlightDocuments");
+                });
+
+            modelBuilder.Entity("FlightDocs_System.Data.FlightDocument", b =>
+                {
+                    b.Navigation("Document")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FlightDocs_System.Data.TypeDocument", b =>

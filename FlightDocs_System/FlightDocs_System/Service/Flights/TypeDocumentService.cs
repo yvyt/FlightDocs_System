@@ -249,5 +249,36 @@ namespace FlightDocs_System.Service.Flights
                 };
             }
         }
+
+        public async Task<ResponseModel> GetActiveById(string id)
+        {
+            var type = await _context.TypeDocument.FirstOrDefaultAsync(x => x.Id == id && x.isActive==true);
+            if (type == null)
+            {
+                return new ResponseModel
+                {
+                    Message = $"Not active type with id={id}",
+                    IsSuccess = false,
+                };
+            }
+            var email = await GetEmailUserFromId(type.CreateBy);
+            TypeDTO dto = new TypeDTO
+            {
+                Id = type.Id,
+                Name = type.Name,
+                Note = type.Note,
+                CreateAt = type.CreateAt.ToString(),
+                CreateBy = email.Email.ToString(),
+                UpdateAt = type.UpdateAt.ToString(),
+                UpdateBy = email.Email.ToString(),
+                isActive = type.isActive,
+            };
+            return new ResponseModel
+            {
+                Message = "Get detail type successful",
+                IsSuccess = true,
+                Data = dto
+            };
+        }
     }
 }

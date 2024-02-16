@@ -258,5 +258,38 @@ namespace FlightDocs_System.Service.Flights
                 };
             }
         }
+
+        public async Task<ResponseModel> GetActiveFlight(string id)
+        {
+            var flight = await _context.Flights.FirstOrDefaultAsync(x => x.Id == id && x.IsActive==true);
+            if (flight == null)
+            {
+                return new ResponseModel
+                {
+                    Message = $"Not exist flight with id={id}",
+                    IsSuccess = false
+                };
+            }
+            var userEmail = await GetEmailUserFromId(flight.CreateBy);
+            FlightDTO fl = new FlightDTO
+            {
+                Id = flight.Id,
+                FlightNo = flight.FlightNo,
+                DateBegin = flight.DateBegin.ToString(),
+                From = flight.From,
+                To = flight.To,
+                CreateAt = flight.CreateAt.ToString(),
+                CreateBy = userEmail.Email,
+                UpdateAt = flight.UpdateAt.ToString(),
+                UpdateBy = userEmail.Email,
+                IsActive = flight.IsActive
+            };
+            return new ResponseModel
+            {
+                Message = "Get detail flight successful",
+                IsSuccess = true,
+                Data = fl
+            };
+        }
     }
 }

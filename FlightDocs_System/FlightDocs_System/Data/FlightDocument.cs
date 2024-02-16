@@ -13,15 +13,16 @@ namespace FlightDocs_System.Data
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
         [Required]
-
+        public string Name {  get; set; }
+        [Required]
         public string TypeId { get; set; }
         [Required]
-
-        public string Version { get; set; } = "1.0";
+        public double Version { get; set; } = 1.0;
         [Required]
-
         public string FlightId { get; set; }
-        public string Note { get; set; }
+        public string? Note { get; set; }
+        [Required]
+        public string DocumentId {  get; set; }
         [Required]
 
         public DateTime CreateAt { get; set; } = DateTime.Now;
