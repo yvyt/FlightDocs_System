@@ -75,6 +75,14 @@ namespace FlightDocs_System.Service.Flights
             foreach (var flight in data)
             {
                 var userEmail = await GetEmailUserFromId(flight.CreateBy);
+                if (userEmail == null)
+                {
+                    return new ResponseModel
+                    {
+                        Message = $"Not found user with id={flight.CreateBy}",
+                        IsSuccess = false,
+                    };
+                }
                 FlightDTO fl = new FlightDTO
                 {
                     Id = flight.Id,
@@ -111,8 +119,13 @@ namespace FlightDocs_System.Service.Flights
         }
         private async Task<UserDTO> GetEmailUserFromId(string id)
         {
+
             var result = await _userService.GetById(id);
-            return (UserDTO)result.Data;
+            if(result.IsSuccess)
+            {
+                return (UserDTO)result.Data;
+            }
+            return null;
         }
 
         public async Task<ResponseModel> GetById(string id)
@@ -127,6 +140,14 @@ namespace FlightDocs_System.Service.Flights
                 };
             }
             var userEmail = await GetEmailUserFromId(flight.CreateBy);
+            if (userEmail == null)
+            {
+                return new ResponseModel
+                {
+                    Message = $"Not found user with id={flight.CreateBy}",
+                    IsSuccess = false,
+                };
+            }
             FlightDTO fl = new FlightDTO
             {
                 Id = flight.Id,

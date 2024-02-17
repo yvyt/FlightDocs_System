@@ -79,7 +79,11 @@ namespace FlightDocs_System.Service.Flights
         private async Task<UserDTO> GetEmailUserFromId(string id)
         {
             var result = await _userService.GetById(id);
-            return (UserDTO)result.Data;
+            if (result.IsSuccess)
+            {
+                return (UserDTO)result.Data;
+            }
+            return null;
         }
 
         public async Task<ResponseModel> GetAll()

@@ -33,5 +33,43 @@ namespace FlightDocs_System.Controllers
             }
             return BadRequest("Something is invalid");
         }
+        [HttpGet("ManagerFlightDocuments")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> ManagerFlightDocuments()
+        {
+            var result = await _service.GetAll();
+            if(result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+        [HttpGet("GetDetail")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetDetails(string id)
+        {
+            var result = await _service.GetById(id);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+        [HttpPut("UpdateFlightDocument")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UpdateFlightDocument(string id, [FromForm ]FlightDocumentUpdate fd)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _service.UpdateFlightDocument(id, fd);
+                if (result.IsSuccess)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+            }
+            return BadRequest("Something is invalid");
+
+        }
     }
 }
