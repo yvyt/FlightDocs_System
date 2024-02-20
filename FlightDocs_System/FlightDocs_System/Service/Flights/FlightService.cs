@@ -10,8 +10,7 @@ namespace FlightDocs_System.Service.Flights
         private readonly ApplicationDbContext _context;
         private readonly IUserService _userService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public FlightService(ApplicationDbContext context, IUserService userService, IHttpContextAccessor httpContextAccessor)
+        public FlightService(ApplicationDbContext context, IUserService userService, IHttpContextAccessor httpContextAccessor )
         {
             _context = context;
             _userService = userService;
@@ -252,6 +251,20 @@ namespace FlightDocs_System.Service.Flights
                 fl.IsActive = false;
                 fl.UpdateAt = DateTime.Now;
                 fl.UpdateBy = user.Id;
+                var fd = await _context.FlightDocuments.Where(x=>x.FlightId==fl.Id).ToListAsync();
+                if (fd!=null)
+                {
+                    foreach(var i in fd)
+                    {
+                        var doc= await _context.FlightDocuments.FirstOrDefaultAsync(x=>x.Id==i.Id);
+                        if(doc!= null)
+                        {
+                            doc.IsActive = false;
+                            doc.UpdateAt= DateTime.Now;
+                            doc.UpdateBy = user.Id;
+                        }
+                    }
+                }
                 _context.Flights.Update(fl);
                 int numberChange = await _context.SaveChangesAsync();
                 if (numberChange <= 0)

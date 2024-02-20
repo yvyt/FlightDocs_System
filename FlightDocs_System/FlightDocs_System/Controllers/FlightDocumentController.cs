@@ -3,6 +3,9 @@ using FlightDocs_System.Service.Flights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.Design;
+using System.Globalization;
+using System.Net.Http.Headers;
 
 namespace FlightDocs_System.Controllers
 {
@@ -81,6 +84,22 @@ namespace FlightDocs_System.Controllers
                 return Ok(result);
             }
             return BadRequest(result);
+        }
+        [HttpGet("DownloadFlightDocument")]
+        [Authorize(AuthenticationSchemes ="Bearer")]
+        public async Task<IActionResult> DownloadFD(string id)
+        {
+            var (fileStream, message) = await _service.DownloadFD(id);
+            if (fileStream != null)
+            {
+                var contentDisposition = new ContentDispositionHeaderValue("attachment")
+                {
+                    FileName = message,
+                };
+                Response.Headers.Add("Content-Disposition", contentDisposition.ToString());
+                return File(fileStream, "application/octet-stream", message);
+            }
+            return BadRequest(message);
         }
     }
 }

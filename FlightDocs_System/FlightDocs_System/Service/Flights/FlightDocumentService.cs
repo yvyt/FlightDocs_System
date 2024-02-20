@@ -412,7 +412,94 @@ namespace FlightDocs_System.Service.Flights
                 };
             }
         }
-           
-        
+
+        public async Task<ResponseModel> GetByFlight(string id)
+        {
+            var data = await _context.FlightDocuments.Where(x=>x.FlightId == id).ToListAsync();
+            List<FlightDocumentDTO> result = new List<FlightDocumentDTO>();
+            foreach (var d in data)
+            {
+                var email = await GetEmailUserFromId(d.CreateBy);
+                if (email == null)
+                {
+                    return new ResponseModel
+                    {
+                        Message = $"Not found user with id={d.CreateBy}",
+                        IsSuccess = false
+                    };
+                }
+                var typeDoc = await GetType(d.TypeId);
+                if (typeDoc == null)
+                {
+                    return new ResponseModel
+                    {
+                        Message = $"Not found type with id={d.TypeId}",
+                        IsSuccess = false
+                    };
+                }
+
+                var fl = await GetFlight(d.FlightId);
+                if (fl == null)
+                {
+                    return new ResponseModel
+                    {
+                        Message = $"Not found flight with id={d.FlightId}",
+                        IsSuccess = false
+                    };
+                }
+                FlightDocumentDTO doc = new FlightDocumentDTO
+                {
+                    Id = d.Id,
+                    Name = d.Name,
+                    Type = typeDoc.Name,
+                    Version = d.Version,
+                    Flight = fl.FlightNo,
+                    CreateAt = d.CreateAt,
+                    CreateBy = email.Email,
+                    UpdateAt = d.UpdateAt,
+                    UpdateBy = email.Email,
+                    IsActive = d.IsActive,
+                };
+                result.Add(doc);
+            }
+            return new ResponseModel
+            {
+                Message = "Get all successful",
+                IsSuccess = true,
+                Data = result
+            };
+        }
+
+        public async Task<(Stream, string)> DownloadFD(string id)
+        {
+            try
+            {
+                var file = await _context.FlightDocuments.FirstOrDefaultAsync(x => x.Id == id);
+                if (file == null)
+                {
+                    return (null, $"Not exist flight document with id={id}");
+                }
+                var document = await _context.Documents.FirstOrDefaultAsync(x => x.Id == file.DocumentId);
+                var fileName = document.Name;
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    return (null, $"File Name is Empty");
+                }
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), document.Path);
+
+                if (!File.Exists(filePath))
+                {
+                    return (null, $"File not found: {fileName}");
+                }
+                return (System.IO.File.OpenRead(filePath), document.Name);
+
+
+            }
+            catch (Exception ex)
+            {
+                return (null, $"Error '{ex.Message}' when download.");
+            }
+        }
     }
+    
 }

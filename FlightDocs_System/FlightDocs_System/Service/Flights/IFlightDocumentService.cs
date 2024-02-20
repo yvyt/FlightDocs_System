@@ -9,5 +9,7 @@ namespace FlightDocs_System.Service.Flights
         Task<ResponseModel> GetById(string id);
         Task<ResponseModel> InActive(string id);
         Task<ResponseModel> UpdateFlightDocument(string id, FlightDocumentUpdate fd);
+        Task<ResponseModel> GetByFlight(string id);
+        Task<(Stream, string)> DownloadFD(string id);
     }
 }
