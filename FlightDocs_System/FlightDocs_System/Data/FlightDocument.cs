@@ -17,7 +17,7 @@ namespace FlightDocs_System.Data
         [Required]
         public string TypeId { get; set; }
         [Required]
-        public double Version { get; set; } = 1.0;
+        public string Version { get; set; } = "1.0";
         [Required]
         public string FlightId { get; set; }
         public string? Note { get; set; }

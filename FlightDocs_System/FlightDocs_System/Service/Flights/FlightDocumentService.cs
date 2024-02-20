@@ -60,7 +60,7 @@ namespace FlightDocs_System.Service.Flights
             }
             string version = "1.0";
             var name = fd.FileContent.FileName;
-            var path = $"Upload/{fd.Flight}/{name}/{version.ToString()}/";
+            var path = $"Upload/{fd.Flight}/{name}/{version}/";
 
             var documentUpload = await _documentService.UploadFile(fd.FileContent, path);
             if (!documentUpload.IsSuccess)
@@ -72,7 +72,7 @@ namespace FlightDocs_System.Service.Flights
             {
                 Name = name,
                 TypeId = fd.Type,
-                Version = double.Parse(version),
+                Version = version,
                 FlightId = fd.Flight,
                 Note = fd.Note,
                 DocumentId = data.Id,
@@ -285,8 +285,9 @@ namespace FlightDocs_System.Service.Flights
                         IsSuccess = false,
                     };
                 }
-                var version = f.Version + 1;
-                
+                var lastestVersion = await GetLatestVersion(f);
+                var version = (float.Parse(lastestVersion) +1)*1.0/10;
+                var updateVersion = version.ToString().Replace(',', '.');
                 if (fd.FileContent != null)
                 {
                     var name = fd.FileContent.FileName;
@@ -298,7 +299,7 @@ namespace FlightDocs_System.Service.Flights
                             IsSuccess = false,
                         };
                     }
-                    var path = $"Upload/{f.FlightId}/{name}/{version.ToString()}/";   
+                    var path = $"Upload/{f.FlightId}/{name}/{updateVersion}/";   
                     var uploadDoc = await _documentService.UploadFile(fd.FileContent, path);
                     if (!uploadDoc.IsSuccess)
                     {
@@ -309,7 +310,7 @@ namespace FlightDocs_System.Service.Flights
                     {
                         Name = f.Name,
                         TypeId = fd.Type,
-                        Version = version,
+                        Version = updateVersion,
                         FlightId = f.FlightId,
                         Note = fd.Note,
                         DocumentId = data.Id,
@@ -322,6 +323,8 @@ namespace FlightDocs_System.Service.Flights
                 }
                 f.TypeId = fd.Type;
                 f.Note = fd.Note;
+                f.UpdateAt = DateTime.Now;
+                f.UpdateBy= user.Id;
                 _context.Update(f);
                 int numberChange = await _context.SaveChangesAsync();
                 if (numberChange <= 0)
@@ -347,5 +350,69 @@ namespace FlightDocs_System.Service.Flights
                 };
             }
         }
+        private async Task<string> GetLatestVersion(FlightDocument d)
+        {
+            var latestVersion = await _context.FlightDocuments
+                .Where(x => x.Name == d.Name && x.FlightId == d.FlightId)
+                .MaxAsync(x => x.Version); // Assuming x.Version is a string
+
+            return latestVersion; // latestVersion is already a string or null
+        }
+
+        public async Task<ResponseModel> InActive(string id)
+        {
+            try
+            {
+                var user = await UserFromAccessToken();
+                if (user == null)
+                {
+                    return new ResponseModel
+                    {
+                        Message = "UnAuthorize",
+                        IsSuccess = false,
+                    };
+                }
+                var fl = await _context.FlightDocuments.FirstOrDefaultAsync(x => x.Id == id);
+                if (fl == null)
+                {
+                    return new ResponseModel
+                    {
+                        Message = $"Not exist flight document with id={id}",
+                        IsSuccess = false
+                    };
+                }
+                fl.IsActive = false;
+                fl.UpdateAt = DateTime.Now;
+                fl.UpdateBy = user.Id;
+                _context.Update(fl);
+                int numberChange = await _context.SaveChangesAsync();
+                if (numberChange <= 0)
+                {
+                    return new ResponseModel
+                    {
+                        Message = "Error when inactive flight document",
+                        IsSuccess = false,
+                    };
+                }
+                return new ResponseModel
+                {
+                    Message = "Inactive Successful",
+                    IsSuccess = true,
+                    Data = fl
+                };
+
+            }
+            catch (Exception ex)
+            {
+                
+                return new ResponseModel
+                {
+                    Message = $"Error when inactive flight document: {ex.Message}",
+                    IsSuccess = false,
+                };
+            }
+        }
+           
+        
     }
 }

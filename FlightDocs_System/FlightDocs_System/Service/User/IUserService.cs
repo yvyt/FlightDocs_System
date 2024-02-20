@@ -11,6 +11,5 @@ namespace FlightDocs_System.Service.User
         Task<ResponseModel> Login(UserLogin user);
         Task<ResponseModel> Register(string role, UserRegister user);
         Task<UserDTO> GetUserByToken(string token);
-        JwtSecurityToken DecodeJwtToken(string accessToken, SymmetricSecurityKey key);
     }
 }

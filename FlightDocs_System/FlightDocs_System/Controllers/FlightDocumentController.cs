@@ -71,5 +71,16 @@ namespace FlightDocs_System.Controllers
             return BadRequest("Something is invalid");
 
         }
+        [HttpDelete("InactiveDocument")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> InactiveDocument(string id)
+        {
+            var result = await _service.InActive(id);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

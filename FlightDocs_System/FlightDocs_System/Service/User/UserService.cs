@@ -233,7 +233,7 @@ namespace FlightDocs_System.Service.User
             }
             return null;
         }
-        public JwtSecurityToken DecodeJwtToken(string accessToken, SymmetricSecurityKey key)
+        private JwtSecurityToken DecodeJwtToken(string accessToken, SymmetricSecurityKey key)
         {
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -257,5 +257,7 @@ namespace FlightDocs_System.Service.User
 
             return securityToken as JwtSecurityToken;
         }
+
+        
     }
 }

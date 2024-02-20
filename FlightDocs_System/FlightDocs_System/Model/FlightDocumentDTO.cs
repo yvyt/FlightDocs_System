@@ -9,7 +9,7 @@ namespace FlightDocs_System.Model
         public string Id { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
-        public double Version { get; set; } 
+        public string Version { get; set; } 
         public string Flight { get; set; }
         public string Note { get; set; }
         public DateTime CreateAt { get; set; } 

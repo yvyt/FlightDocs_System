@@ -31,6 +31,7 @@ namespace FlightDocs_System.Controllers
             return BadRequest("Something is not valid");
         }
         [HttpPost("Register")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
 
         public async Task<IActionResult> CreateUser(string role, [FromBody] UserRegister user)
         {
