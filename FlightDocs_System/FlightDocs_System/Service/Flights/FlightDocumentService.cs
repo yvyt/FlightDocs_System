@@ -153,7 +153,7 @@ namespace FlightDocs_System.Service.Flights
                         IsSuccess = false
                     };
                 }
-                var typeDoc = await GetType(d.TypeId);
+                var typeDoc = await GetTypeDetail (d.TypeId);
                 if (typeDoc == null)
                 {
                     return new ResponseModel
@@ -163,7 +163,7 @@ namespace FlightDocs_System.Service.Flights
                     };
                 }
 
-                var fl = await GetFlight(d.FlightId);
+                var fl = await GetFlightDetail(d.FlightId);
                 if (fl == null)
                 {
                     return new ResponseModel
@@ -195,6 +195,28 @@ namespace FlightDocs_System.Service.Flights
             };
         }
 
+        private async Task<TypeDTO> GetTypeDetail(string typeId)
+        {
+            var result = await _typeDocumentService.GetActiveById(typeId);
+            if (result.IsSuccess)
+            {
+                return (TypeDTO)result.Data;
+
+            }
+            return null;
+        }
+
+        private async Task<FlightDTO> GetFlightDetail(string flightId)
+        {
+            var result = await _flightService.GetById(flightId);
+            if (result.IsSuccess)
+            {
+                return (FlightDTO)result.Data;
+
+            }
+            return null;
+        }
+
         public async Task<ResponseModel> GetById(string id)
         {
             var d = await _context.FlightDocuments.FirstOrDefaultAsync(x => x.Id == id);
@@ -215,7 +237,7 @@ namespace FlightDocs_System.Service.Flights
                     IsSuccess = false
                 };
             }
-            var typeDoc = await GetType(d.TypeId);
+            var typeDoc = await GetTypeDetail(d.TypeId);
             if (typeDoc == null)
             {
                 return new ResponseModel
@@ -225,7 +247,7 @@ namespace FlightDocs_System.Service.Flights
                 };
             }
 
-            var fl = await GetFlight(d.FlightId);
+            var fl = await GetFlightDetail(d.FlightId);
             if (fl == null)
             {
                 return new ResponseModel
@@ -500,6 +522,7 @@ namespace FlightDocs_System.Service.Flights
                 return (null, $"Error '{ex.Message}' when download.");
             }
         }
+
     }
     
 }
