@@ -13,7 +13,8 @@ namespace FlightDocs_System.Data
         public DbSet<TypeDocument> TypeDocument { get; set; }
         public DbSet<FlightDocument> FlightDocuments { get; set; }
         public DbSet<Document> Documents { get; set; }
-
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<RolePermission> rolePermissions { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
@@ -39,9 +40,35 @@ namespace FlightDocs_System.Data
                 .HasOne(d => d.Document)
                 .WithOne(fd => fd.FlightDocument)
                 .HasForeignKey<FlightDocument>(fd => fd.DocumentId);
-
-
+            builder.Entity<RolePermission>()
+                .HasOne(r => r.Role)
+                .WithMany()
+                .HasForeignKey(r => r.RoleId);
+            builder.Entity<RolePermission>()
+                .HasOne(r => r.Permission)
+                .WithMany(r => r.RolePermissions)
+                .HasForeignKey(r => r.PermissionId);
             //SeedRoles(builder);
+           // SeedPermission(builder);
+        }
+
+        private void SeedPermission(ModelBuilder builder)
+        {
+            List<string> modules = new List<string> { "Flight", "FlightDocument", "TypeDocument", "User", "Role", "Permission"};
+            List<string> action = new List<string> { "Edit", "Delete", "Create", "View" };
+            foreach (var module in modules)
+            {
+                foreach (var ac in action)
+                {
+                    builder.Entity<Permission>().HasData(
+                    new Permission()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        PermissionName = $"{ac}:{module}"
+                    }
+                );
+                }
+            }
         }
 
         private void SeedRoles(ModelBuilder builder)

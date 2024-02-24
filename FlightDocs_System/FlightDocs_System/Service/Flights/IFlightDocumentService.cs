@@ -11,5 +11,6 @@ namespace FlightDocs_System.Service.Flights
         Task<ResponseModel> UpdateFlightDocument(string id, FlightDocumentUpdate fd);
         Task<ResponseModel> GetByFlight(string id);
         Task<(Stream, string)> DownloadFD(string id);
+        Task<ResponseModel> GetByType(string typeID);
     }
 }

@@ -184,6 +184,7 @@ namespace FlightDocs_System.Service.Flights
                     UpdateAt = d.UpdateAt,
                     UpdateBy = email.Email,
                     IsActive = d.IsActive,
+                    Note=d.Note
                 };
                 result.Add(doc);
             }
@@ -197,7 +198,7 @@ namespace FlightDocs_System.Service.Flights
 
         private async Task<TypeDTO> GetTypeDetail(string typeId)
         {
-            var result = await _typeDocumentService.GetActiveById(typeId);
+            var result = await _typeDocumentService.GetById(typeId);
             if (result.IsSuccess)
             {
                 return (TypeDTO)result.Data;
@@ -267,7 +268,9 @@ namespace FlightDocs_System.Service.Flights
                 CreateBy = email.Email,
                 UpdateAt = d.UpdateAt,
                 UpdateBy = email.Email,
-                IsActive = d.IsActive
+                IsActive = d.IsActive,
+                Note=d.Note
+
             };
             return new ResponseModel
             {
@@ -376,9 +379,8 @@ namespace FlightDocs_System.Service.Flights
         {
             var latestVersion = await _context.FlightDocuments
                 .Where(x => x.Name == d.Name && x.FlightId == d.FlightId)
-                .MaxAsync(x => x.Version); // Assuming x.Version is a string
-
-            return latestVersion; // latestVersion is already a string or null
+                .MaxAsync(x => x.Version);
+            return latestVersion;
         }
 
         public async Task<ResponseModel> InActive(string id)
@@ -437,6 +439,15 @@ namespace FlightDocs_System.Service.Flights
 
         public async Task<ResponseModel> GetByFlight(string id)
         {
+            var fl = await GetFlightDetail(id);
+            if (fl == null)
+            {
+                return new ResponseModel
+                {
+                    Message = $"Not found flight with id={id}",
+                    IsSuccess = false
+                };
+            }
             var data = await _context.FlightDocuments.Where(x=>x.FlightId == id).ToListAsync();
             List<FlightDocumentDTO> result = new List<FlightDocumentDTO>();
             foreach (var d in data)
@@ -450,7 +461,7 @@ namespace FlightDocs_System.Service.Flights
                         IsSuccess = false
                     };
                 }
-                var typeDoc = await GetType(d.TypeId);
+                var typeDoc = await GetTypeDetail(d.TypeId);
                 if (typeDoc == null)
                 {
                     return new ResponseModel
@@ -460,15 +471,7 @@ namespace FlightDocs_System.Service.Flights
                     };
                 }
 
-                var fl = await GetFlight(d.FlightId);
-                if (fl == null)
-                {
-                    return new ResponseModel
-                    {
-                        Message = $"Not found flight with id={d.FlightId}",
-                        IsSuccess = false
-                    };
-                }
+                
                 FlightDocumentDTO doc = new FlightDocumentDTO
                 {
                     Id = d.Id,
@@ -523,6 +526,63 @@ namespace FlightDocs_System.Service.Flights
             }
         }
 
+        public async Task<ResponseModel> GetByType(string typeID)
+        {
+            var typeDoc = await GetTypeDetail(typeID);
+            if (typeDoc == null)
+            {
+                return new ResponseModel
+                {
+                    Message = $"Not found type with id={typeID}",
+                    IsSuccess = false
+                };
+            }
+            var data = await _context.FlightDocuments.Where(x => x.TypeId == typeID).ToListAsync();
+            List<FlightDocumentDTO> result = new List<FlightDocumentDTO>();
+            foreach (var d in data)
+            {
+                var email = await GetEmailUserFromId(d.CreateBy);
+                if (email == null)
+                {
+                    return new ResponseModel
+                    {
+                        Message = $"Not found user with id={d.CreateBy}",
+                        IsSuccess = false
+                    };
+                }
+               
+                var fl = await GetFlightDetail(d.FlightId);
+                if (fl == null)
+                {
+                    return new ResponseModel
+                    {
+                        Message = $"Not found flight with id={d.FlightId}",
+                        IsSuccess = false
+                    };
+                }
+
+                FlightDocumentDTO doc = new FlightDocumentDTO
+                {
+                    Id = d.Id,
+                    Name = d.Name,
+                    Type = typeDoc.Name,
+                    Version = d.Version,
+                    Flight = fl.FlightNo,
+                    CreateAt = d.CreateAt,
+                    CreateBy = email.Email,
+                    UpdateAt = d.UpdateAt,
+                    UpdateBy = email.Email,
+                    IsActive = d.IsActive,
+                };
+                result.Add(doc);
+            }
+            return new ResponseModel
+            {
+                Message = "Get all successful",
+                IsSuccess = true,
+                Data = result
+            };
+        }
     }
     
 }

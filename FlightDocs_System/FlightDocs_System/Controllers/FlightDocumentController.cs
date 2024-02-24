@@ -101,5 +101,27 @@ namespace FlightDocs_System.Controllers
             }
             return BadRequest(message);
         }
+        [HttpGet("GetByFlight")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetByFlight(string flightID)
+        {
+            var result = await _service.GetByFlight(flightID);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+        [HttpGet("GetByType")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetByType(string typeID)
+        {
+            var result = await _service.GetByType(typeID);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

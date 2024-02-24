@@ -19,7 +19,6 @@ namespace FlightDocs_System.Controllers
         }
         [HttpPost("AddFlight")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-
         public async Task<IActionResult> CreateFlight([FromForm] FlightCreate flight)
         {
             if(ModelState.IsValid)
@@ -83,5 +82,6 @@ namespace FlightDocs_System.Controllers
             }
             return BadRequest(result);
         }
+        
     }
 }

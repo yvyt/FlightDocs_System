@@ -1,5 +1,7 @@
 using FlightDocs_System.Data;
 using FlightDocs_System.Service.Flights;
+using FlightDocs_System.Service.RolePermissions;
+using FlightDocs_System.Service.Roles;
 using FlightDocs_System.Service.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -44,8 +46,7 @@ builder.Services.AddSwaggerGen(option =>
             new string[]{}
         }
     });
-});
-
+}); 
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("FlightDocs_DB"));
@@ -75,7 +76,9 @@ builder.Services.AddScoped<IUserService,UserService>();
 builder.Services.AddScoped<IFlightService,FlightService>();
 builder.Services.AddScoped<IFlightDocumentService,FlightDocumentService>();
 builder.Services.AddScoped<ITypeDocumentService,TypeDocumentService>();
-builder.Services.AddTransient<IDocumentService,DocumentService>();
+builder.Services.AddScoped<IDocumentService,DocumentService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(op =>
 {
     op.Password.RequireDigit = false;
@@ -87,6 +90,32 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(op =>
 
 }).AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
+
+builder.Services.AddAuthorization(options =>
+{
+
+    List<string> modules = new List<string> { "Flight", "FlightDocument", "TypeDocument", "User", "Role", "Permission" };
+    List<string> action = new List<string> { "Edit", "Delete", "Create", "View" };
+    foreach (var module in modules)
+    {
+        foreach (var ac in action)
+        {
+            string temp = $"{ac}{module}";
+            List<string> listPermission = new List<string>
+            {
+                "Create:Permission",
+                "Delete:Permission",
+                "Edit:Permission",
+                "Delete:Role"
+            };
+            if (!listPermission.Contains(temp))
+            {
+                options.AddPolicy($"{ac}{module}", policy => policy.RequireClaim("Permission", $"{ac}:{module}"));
+            }
+        }
+    }
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
