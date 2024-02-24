@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.Design;
 using System.Globalization;
+using System.IO.Compression;
 using System.Net.Http.Headers;
 
 namespace FlightDocs_System.Controllers
@@ -123,5 +124,24 @@ namespace FlightDocs_System.Controllers
             }
             return BadRequest(result);
         }
+        [HttpGet("DownloadZip")]
+        [Authorize(AuthenticationSchemes ="Bearer")]
+        public async Task<IActionResult> DownloadZip(string flightID)
+        {
+           var zipFile = await _service.DownloadZip(flightID);
+            return File(zipFile, "application/zip", "download.zip");            
+        }
+        [HttpGet("ConfirmDocument")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> ConfirmDocument(string id)
+        {
+            var result = await _service.ConfirmDocument(id);
+            if(result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }
+ 

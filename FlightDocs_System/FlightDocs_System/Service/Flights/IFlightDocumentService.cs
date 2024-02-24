@@ -12,5 +12,7 @@ namespace FlightDocs_System.Service.Flights
         Task<ResponseModel> GetByFlight(string id);
         Task<(Stream, string)> DownloadFD(string id);
         Task<ResponseModel> GetByType(string typeID);
+        Task<byte[]> DownloadZip(string flightID);
+        Task<ResponseModel> ConfirmDocument(string id);
     }
 }

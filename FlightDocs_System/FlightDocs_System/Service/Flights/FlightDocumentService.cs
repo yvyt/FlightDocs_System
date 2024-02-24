@@ -8,6 +8,7 @@ using FlightDocs_System.Migrations;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System.Reflection.Metadata;
 using Document = FlightDocs_System.Data.Document;
+using System.IO.Compression;
 
 namespace FlightDocs_System.Service.Flights
 {
@@ -301,6 +302,7 @@ namespace FlightDocs_System.Service.Flights
                         IsSuccess = false
                     };
                 }
+                
                 var type = await GetType(fd.Type);
                 if (type == null)
                 {
@@ -311,6 +313,15 @@ namespace FlightDocs_System.Service.Flights
                     };
                 }
                 var lastestVersion = await GetLatestVersion(f);
+                var checkConfirm = await _context.FlightDocuments.FirstOrDefaultAsync(x => x.Name == f.Name && x.FlightId == f.FlightId && x.Version==lastestVersion);
+                if (checkConfirm.IsConfirm){
+                
+                        return new ResponseModel
+                        {
+                            Message = "Documents have been confirmed, cannot be updated",
+                            IsSuccess = false
+                        };
+                }
                 var version = (float.Parse(lastestVersion) +1)*1.0/10;
                 var updateVersion = version.ToString().Replace(',', '.');
                 if (fd.FileContent != null)
@@ -582,6 +593,111 @@ namespace FlightDocs_System.Service.Flights
                 IsSuccess = true,
                 Data = result
             };
+        }
+
+        public async Task<byte[]> DownloadZip(string flightID)
+        {
+            try
+            {
+                var docs = await _context.FlightDocuments.Where(x => x.FlightId == flightID && x.IsConfirm).ToListAsync();
+                if (docs == null)
+                {
+                    return null;
+                }
+                var filePaths = new List<string>();
+                foreach (var doc in docs)
+                {
+                    var d = await _context.Documents.FirstOrDefaultAsync(x => x.Id == doc.DocumentId);
+                    if (d == null)
+                    {
+                        return null;
+
+                    }
+                    filePaths.Add(d.Path);
+                }
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                    {
+                        foreach (var filePath in filePaths)
+                        {
+                            var fileInfo = new FileInfo(filePath);
+                            if (fileInfo.Exists)
+                            {
+                                var zipArchiveEntry = archive.CreateEntry(fileInfo.Name, CompressionLevel.Fastest);
+                                using (var zipStream = zipArchiveEntry.Open())
+                                    await fileInfo.OpenRead().CopyToAsync(zipStream);
+                            }
+                        }
+                    }
+                    memoryStream.Position = 0;
+                    return memoryStream.ToArray();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<ResponseModel> ConfirmDocument(string id)
+        {
+            try
+            {
+                var user = await UserFromAccessToken();
+                if (user == null)
+                {
+                    return new ResponseModel
+                    {
+                        Message = "UnAuthorize",
+                        IsSuccess = false
+                    };
+                }
+                var doc= await _context.FlightDocuments.FirstOrDefaultAsync(x=>x.Id == id);
+                if (doc == null)
+                {
+                    return new ResponseModel
+                    {
+                        Message = $"Not exist flight document with id={id}",
+                        IsSuccess = false
+                    };
+                }
+                var lastest = await GetLatestVersion(doc);
+                if (lastest.Equals(doc.Version))
+                {
+                    doc.IsConfirm = true;
+                    doc.UpdateAt= DateTime.Now;
+                    doc.UpdateBy = user.Id;
+                    _context.FlightDocuments.Update(doc);
+                    int numberChange = await _context.SaveChangesAsync();
+                    if (numberChange <= 0)
+                    {
+                        return new ResponseModel
+                        {
+                            Message = $"Error when confirm flight document",
+                            IsSuccess = false,
+                        };
+                    }
+                    return new ResponseModel
+                    {
+                        Message = $"Confirm  document successful",
+                        IsSuccess = true,
+                    };
+                }
+                return new ResponseModel
+                {
+                    Message = "Only documents with the latest version are allowed to be confirmed",
+                    IsSuccess = false,
+                };
+            }catch(Exception ex)
+            {
+                return new ResponseModel
+                {
+                    Message = $"Error when confirm",
+                    IsSuccess = false
+                };
+            }
         }
     }
     

@@ -38,7 +38,8 @@ namespace FlightDocs_System.Data
         [Required]
 
         public bool IsActive { get; set; } = true;
-
+        [Required]
+        public bool IsConfirm { get; set; } = false;
         public Flight Flight { get; set; }
         public TypeDocument TypeDocument { get; set; }
         public virtual Document Document { get; set; }
