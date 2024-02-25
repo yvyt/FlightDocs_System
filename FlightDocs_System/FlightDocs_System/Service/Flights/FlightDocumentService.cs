@@ -55,7 +55,7 @@ namespace FlightDocs_System.Service.Flights
             {
                 return new ResponseModel
                 {
-                    Message = $"Not exist flight with id={flight}",
+                    Message = $"Not exist flight with id={flight.Id}",
                     IsSuccess = false,
                 };
             }

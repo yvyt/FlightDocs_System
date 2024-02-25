@@ -103,10 +103,10 @@ builder.Services.AddAuthorization(options =>
             string temp = $"{ac}{module}";
             List<string> listPermission = new List<string>
             {
-                "Create:Permission",
-                "Delete:Permission",
-                "Edit:Permission",
-                "Delete:Role"
+                "CreatePermission",
+                "DeletePermission",
+                "EditPermission",
+                "DeleteRole"
             };
             if (!listPermission.Contains(temp))
             {

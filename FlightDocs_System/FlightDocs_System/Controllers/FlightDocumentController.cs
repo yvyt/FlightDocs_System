@@ -23,6 +23,8 @@ namespace FlightDocs_System.Controllers
 
         [HttpPost("AddFlightDocument")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "CreateFlightDocument")]
+
         public async Task<IActionResult> AddFlightDocument([FromForm] FlightDocumentCreate fd)
         {
             if(ModelState.IsValid)
@@ -38,7 +40,7 @@ namespace FlightDocs_System.Controllers
             return BadRequest("Something is invalid");
         }
         [HttpGet("ManagerFlightDocuments")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer",Roles ="Back Office")]
         public async Task<IActionResult> ManagerFlightDocuments()
         {
             var result = await _service.GetAll();
@@ -50,6 +52,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpGet("GetDetail")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "ViewFlightDocument")]
+
         public async Task<IActionResult> GetDetails(string id)
         {
             var result = await _service.GetById(id);
@@ -61,6 +65,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpPut("UpdateFlightDocument")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "EditFlightDocument")]
+
         public async Task<IActionResult> UpdateFlightDocument(string id, [FromForm ]FlightDocumentUpdate fd)
         {
             if (ModelState.IsValid)
@@ -77,6 +83,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpDelete("InactiveDocument")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "EditFlightDocument")]
+
         public async Task<IActionResult> InactiveDocument(string id)
         {
             var result = await _service.InActive(id);
@@ -88,6 +96,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpGet("DownloadFlightDocument")]
         [Authorize(AuthenticationSchemes ="Bearer")]
+        [Authorize(Policy = "ViewFlightDocument")]
+
         public async Task<IActionResult> DownloadFD(string id)
         {
             var (fileStream, message) = await _service.DownloadFD(id);
@@ -104,6 +114,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpGet("GetByFlight")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "ViewFlightDocument")]
+
         public async Task<IActionResult> GetByFlight(string flightID)
         {
             var result = await _service.GetByFlight(flightID);
@@ -115,6 +127,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpGet("GetByType")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "ViewFlightDocument")]
+
         public async Task<IActionResult> GetByType(string typeID)
         {
             var result = await _service.GetByType(typeID);
@@ -126,6 +140,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpGet("DownloadZip")]
         [Authorize(AuthenticationSchemes ="Bearer")]
+        [Authorize(Policy = "ViewFlightDocument")]
+
         public async Task<IActionResult> DownloadZip(string flightID)
         {
            var zipFile = await _service.DownloadZip(flightID);
@@ -133,6 +149,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpGet("ConfirmDocument")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "EditFlightDocument")]
+
         public async Task<IActionResult> ConfirmDocument(string id)
         {
             var result = await _service.ConfirmDocument(id);

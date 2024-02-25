@@ -49,24 +49,36 @@ namespace FlightDocs_System.Data
                 .WithMany(r => r.RolePermissions)
                 .HasForeignKey(r => r.PermissionId);
             //SeedRoles(builder);
-           // SeedPermission(builder);
+            //SeedPermission(builder);
         }
 
         private void SeedPermission(ModelBuilder builder)
         {
-            List<string> modules = new List<string> { "Flight", "FlightDocument", "TypeDocument", "User", "Role", "Permission"};
+            List<string> modules = new List<string> { "Flight", "FlightDocument", "TypeDocument", "User", "Role", "Permission" };
             List<string> action = new List<string> { "Edit", "Delete", "Create", "View" };
             foreach (var module in modules)
             {
                 foreach (var ac in action)
                 {
-                    builder.Entity<Permission>().HasData(
-                    new Permission()
+                    string temp = $"{ac}:{module}";
+                    List<string> listPermission = new List<string>
                     {
-                        Id = Guid.NewGuid().ToString(),
-                        PermissionName = $"{ac}:{module}"
+                        "Create:Permission",
+                        "Delete:Permission",
+                        "Edit:Permission",
+                        "Delete:Role"
+                    };
+                    if (!listPermission.Contains(temp))
+                    {
+                        builder.Entity<Permission>().HasData(
+                        new Permission()
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            PermissionName = $"{ac}:{module}"
+                        });
+
                     }
-                );
+
                 }
             }
         }

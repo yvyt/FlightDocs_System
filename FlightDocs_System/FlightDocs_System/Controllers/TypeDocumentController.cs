@@ -18,6 +18,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpPost("AddType")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "CreateTypeDocument")]
+
         public async Task<IActionResult> AddType(TypeCreate type)
         {
             if(ModelState.IsValid)
@@ -33,7 +35,7 @@ namespace FlightDocs_System.Controllers
 
         }
         [HttpGet("ManagerType")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer",Roles ="Back Office")]
         public async Task<IActionResult> ManagerType()
         {
             var result = await _service.GetAll();
@@ -45,6 +47,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpGet("GetDetail")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "ViewTypeDocument")]
+
         public async Task<IActionResult> GetDetail(string id)
         {
             var result = await _service.GetById(id);
@@ -56,6 +60,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpPut("UpdateType")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "EditTypeDocument")]
+
         public async Task<IActionResult> UpdateType(string id, TypeCreate type)
         {
             if (ModelState.IsValid)
@@ -71,6 +77,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpDelete("InactiveType")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "EditTypeDocument")]
+
         public async Task<IActionResult> InactiveType(string id)
         {
             var result = await _service.Inactive(id);

@@ -17,6 +17,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "CreateRole")]
+
         public async Task<IActionResult> AddRolePermission(string RoleId, [FromForm] List<string> permissions)
         {
             if (ModelState.IsValid)
@@ -32,6 +34,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpGet("GetDetail")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "ViewRole")]
+
         public async Task<IActionResult> GetDetail(string roleId)
         {
             var result = await _service.GetDetails(roleId);
@@ -43,6 +47,7 @@ namespace FlightDocs_System.Controllers
         }
         [HttpPut("UpdatePermission")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "EditRole")]
         public async Task<IActionResult> UpdatePermission(string roleId, [FromForm] List<string> permissions)
         {
             if (ModelState.IsValid)

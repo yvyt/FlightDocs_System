@@ -31,7 +31,8 @@ namespace FlightDocs_System.Controllers
             return BadRequest("Something is not valid");
         }
         [HttpPost("Register")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "CreateUser")]
 
         public async Task<IActionResult> CreateUser(string role, [FromBody] UserRegister user)
         {
@@ -48,7 +49,8 @@ namespace FlightDocs_System.Controllers
 
         }
         [HttpGet("GetAllUser")]
-        [Authorize(AuthenticationSchemes = "Bearer",Roles ="Admin")]
+        [Authorize(AuthenticationSchemes = "Bearer",Roles ="Admin,Back Office")]
+
         public async Task<IActionResult> UserManager()
         {
             var result= await _service.GetAll();
@@ -59,7 +61,9 @@ namespace FlightDocs_System.Controllers
             return BadRequest(result);
         }
         [HttpGet("GetDetail")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "ViewUser")]
+
         public async Task<IActionResult> GetDetaitl(string id)
         {
             var result = await _service.GetById(id);

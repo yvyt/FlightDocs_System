@@ -18,6 +18,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpPost("AddRole")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "CreateRole")]
+
         public async Task<IActionResult> AddRole(RoleCreate role)
         {
             if(ModelState.IsValid)
@@ -32,7 +34,8 @@ namespace FlightDocs_System.Controllers
             return BadRequest("Something is invalid");
         }
         [HttpGet("ManagerRole")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer",Roles ="Admin")]
+
         public async Task<IActionResult> ManagerRole()
         {
             var result = await _service.GetAll();
@@ -44,6 +47,8 @@ namespace FlightDocs_System.Controllers
         }
         [HttpGet("GetDetail")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "ViewRole")]
+
         public async Task<IActionResult> GetDetail(string id)
         {
             var result = await _service.GetById(id);
@@ -56,6 +61,7 @@ namespace FlightDocs_System.Controllers
         }
         [HttpPut("EditRole")]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = "EditRole")]
         public async Task<IActionResult> EditRole(string id, RoleCreate role)
         {
             if (ModelState.IsValid)

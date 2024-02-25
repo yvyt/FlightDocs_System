@@ -58,7 +58,13 @@ namespace FlightDocs_System.Service.User
                 foreach (var role in userRole)
                 {
                     authClaim.Add(new Claim(ClaimTypes.Role, role));
-
+                    var roles = await _roleManager.FindByNameAsync(role);
+                    var Rolepermissions = await _context.rolePermissions.Where(x => x.RoleId == roles.Id).ToListAsync();
+                    foreach (var permission in Rolepermissions)
+                    {
+                        var p = await _context.Permissions.FirstOrDefaultAsync(x => x.Id == permission.PermissionId);
+                        authClaim.Add(new Claim("Permission", p.PermissionName));
+                    }
                 }
 
                 var token = CreateToken(authClaim);

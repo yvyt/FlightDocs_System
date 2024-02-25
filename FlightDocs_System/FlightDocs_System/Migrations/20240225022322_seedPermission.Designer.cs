@@ -4,6 +4,7 @@ using FlightDocs_System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlightDocs_System.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240225022322_seedPermission")]
+    partial class seedPermission
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,102 +176,122 @@ namespace FlightDocs_System.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c9c3d29c-9314-4d86-a3ac-a7f927d84ca7",
+                            Id = "f929b758-0d8a-4395-adfd-c2c4bc65a587",
                             PermissionName = "Edit:Flight"
                         },
                         new
                         {
-                            Id = "6cdc6e04-a524-44e1-8ece-7ffb440f5c1b",
+                            Id = "f528225f-ff96-472c-8e84-6366f7bf564c",
                             PermissionName = "Delete:Flight"
                         },
                         new
                         {
-                            Id = "173c5d7c-e4fb-404b-9b18-fd978c864c28",
+                            Id = "384d81c4-6573-44c2-bbeb-6935c4757e4c",
                             PermissionName = "Create:Flight"
                         },
                         new
                         {
-                            Id = "6c03fbdc-dfac-4133-bed3-21f8398d0dd7",
+                            Id = "93c85a2d-9371-447e-bc25-f18560f346b9",
                             PermissionName = "View:Flight"
                         },
                         new
                         {
-                            Id = "5b276b3a-6366-48f2-a832-026019a209a2",
+                            Id = "df9c77cc-3b91-4afa-afa2-a975ef38c059",
                             PermissionName = "Edit:FlightDocument"
                         },
                         new
                         {
-                            Id = "df730c7e-d95d-4c9c-9faa-e8e9d4bc255a",
+                            Id = "29d3478e-2f8d-4513-978a-e6ea5e181b9c",
                             PermissionName = "Delete:FlightDocument"
                         },
                         new
                         {
-                            Id = "d706ed1c-49d0-4888-bb33-09664a250146",
+                            Id = "fa74aa7f-3087-4838-bd8d-b2fdb6e68ffe",
                             PermissionName = "Create:FlightDocument"
                         },
                         new
                         {
-                            Id = "c761c6eb-241a-440a-a14d-014685bc8bb8",
+                            Id = "8ca9e737-0db5-4e8c-88c0-0201ff6a4ae4",
                             PermissionName = "View:FlightDocument"
                         },
                         new
                         {
-                            Id = "9f7163d3-5de4-4693-8d78-97f13bbf3e2d",
+                            Id = "55ec326c-d135-49fb-99db-de374f97b537",
                             PermissionName = "Edit:TypeDocument"
                         },
                         new
                         {
-                            Id = "9cb0fde9-8260-4c88-a995-d88b176a9ace",
+                            Id = "d9bc9459-22ce-42d7-926e-740974515dd0",
                             PermissionName = "Delete:TypeDocument"
                         },
                         new
                         {
-                            Id = "d8e7c6b4-71f8-4172-8ac6-7ee492337388",
+                            Id = "31b22bca-e1b9-454f-99d1-b50565768bf1",
                             PermissionName = "Create:TypeDocument"
                         },
                         new
                         {
-                            Id = "51a54f5c-0385-4d21-a094-bdc29e1f0d90",
+                            Id = "9b9cf7ec-701e-400b-a577-f043fad6fe83",
                             PermissionName = "View:TypeDocument"
                         },
                         new
                         {
-                            Id = "fe3fe573-03e9-45b7-a899-cad14610a980",
+                            Id = "6995c796-0806-4eac-8e2d-2027ea09a2a5",
                             PermissionName = "Edit:User"
                         },
                         new
                         {
-                            Id = "3d970618-a0fb-4b8e-8d78-6c32a4dfb0a1",
+                            Id = "6ec0b05e-4a7f-4a6c-af14-e2b1c5b96816",
                             PermissionName = "Delete:User"
                         },
                         new
                         {
-                            Id = "9ab85c60-326e-469e-b773-b5842a66467d",
+                            Id = "94072d3b-0455-4278-b96d-6f32dbfb8981",
                             PermissionName = "Create:User"
                         },
                         new
                         {
-                            Id = "e0b5c87c-5a63-4ad7-b9aa-a852dee01069",
+                            Id = "2e4b171c-dca2-4df8-8b05-83edecdbc736",
                             PermissionName = "View:User"
                         },
                         new
                         {
-                            Id = "119638e0-2642-4d6f-a59c-1070dc11cbae",
+                            Id = "f723b822-34bb-4fa1-97ee-995cf775dd9d",
                             PermissionName = "Edit:Role"
                         },
                         new
                         {
-                            Id = "a77b327d-80d7-475c-9600-3c43e03be34d",
+                            Id = "88c22a13-73bc-4bb0-bdb8-1360bdc5d734",
+                            PermissionName = "Delete:Role"
+                        },
+                        new
+                        {
+                            Id = "4ab49bb5-5cee-4f32-9807-d7ffc6a8e3b6",
                             PermissionName = "Create:Role"
                         },
                         new
                         {
-                            Id = "fe9c4a6c-d5cd-413d-8d58-02301c0d9eab",
+                            Id = "899d53ef-3c8f-487d-a050-4493fcfc51be",
                             PermissionName = "View:Role"
                         },
                         new
                         {
-                            Id = "20d95e83-0ba4-419e-8068-a8ead9ed7dfe",
+                            Id = "6b40c0d2-4cd6-4f9e-81a0-13716725c325",
+                            PermissionName = "Edit:Permission"
+                        },
+                        new
+                        {
+                            Id = "816fd96b-bd91-4172-af38-e2fac1729eb5",
+                            PermissionName = "Delete:Permission"
+                        },
+                        new
+                        {
+                            Id = "1460f7e3-ca81-4661-8c92-f6a9ead11a8a",
+                            PermissionName = "Create:Permission"
+                        },
+                        new
+                        {
+                            Id = "1d535b76-554f-48b9-9b38-58fe4f89c800",
                             PermissionName = "View:Permission"
                         });
                 });
